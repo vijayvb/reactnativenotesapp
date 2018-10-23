@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "574805621868",
+    "firebase_url": "https://trialreactproject.firebaseio.com",
+    "project_id": "trialreactproject",
+    "storage_bucket": "trialreactproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:574805621868:android:43ea02ff5884cb65",
+        "android_client_info": {
+          "package_name": "com.abc.noteapponreactnative"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "574805621868-5nn0i09i1hedpp7b5ulu7qfhiq7uskei.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGy-iNVucKVvrejIRo3U8QYcKgqokgXIc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

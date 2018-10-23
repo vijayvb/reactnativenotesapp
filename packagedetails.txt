@@ -1,0 +1,3 @@
+Project name:  noteapponreactnative
+Company name:  abc
+Package name:  com.abc.noteapponreactnative
