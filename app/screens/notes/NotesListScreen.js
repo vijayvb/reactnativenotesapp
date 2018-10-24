@@ -25,7 +25,7 @@ export class NotesListScreen extends React.Component {
             headerLeft: (
                 <Button
                 onPress={() => showDialogFunction()}
-                title="Filter"
+                title="Search"
                 color="#000"
                 />
             ),
