@@ -26,6 +26,8 @@
     "native-base": "^2.8.1",
     "react": "16.5.0",
     "react-native": "0.57.1",
+    "react-native-dialog": "^5.4.0",
+    "react-native-dialog-input": "^1.0.5",
     "react-native-firebase": "^5.0.0",
     "react-native-image-picker": "^0.27.1",
     "react-native-super-grid": "^2.4.3",

@@ -1,45 +1,56 @@
 import React from 'react';
 import { StyleSheet, View, FlatList, Text, Button, TouchableOpacity } from 'react-native';
 import Moment from 'moment';
+import Dialog from "react-native-dialog";
 import { NoteModel, getNotesRefForUser } from '../../data/model/NoteModel';
 
 export class NotesListScreen extends React.Component {
 
+    static navigationOptions = ({ navigate, navigation }) => {
+        let showDialogFunction = null;
+        if (navigation.state.params && navigation.state.params.hasOwnProperty('showFilterDialog')) {
+            showDialogFunction = navigation.state.params.showFilterDialog;
+        } else {
+            showDialogFunction = () => {};
+        }
+        return ({
+            title: 'Notes',
+            headerRight: (
+                <Button
+                onPress={() => navigation.navigate('NotesEditor')}
+                title="New+"
+                color="#000"
+                />
+            ),
+            headerLeft: (
+                <Button
+                onPress={() => showDialogFunction()}
+                title="Filter"
+                color="#000"
+                />
+            ),
+        });
+    };
     
-    static navigationOptions = ({ navigate, navigation }) => ({
-        title: 'Notes',
-        
-        headerRight: (
-            <Button
-              onPress={() => navigation.navigate('NotesEditor')}
-              title="New+"
-              color="#000"
-            />
-        ),
-        headerLeft: (
-            <Button
-              onPress={() => alert('Open filter')}
-              title="Filter"
-              color="#000"
-            />
-        ),
-    });
-
     constructor(props) {
         super(props);
     
         this.state = {
-          loading: false,
+          showFilterDialog: false,
+          originalList:[],
           notesList: [],
-          refreshing: false,
+          filterText: ""
         };
         this.notesRef;
         this.initNotesData = this.initNotesData.bind(this);
         this.renderNotesItem = this.renderNotesItem.bind(this);
+        this.showFilterDialogFunction = this.showFilterDialogFunction.bind(this);
+        this.applyFilterTextOnInput = this.applyFilterTextOnInput.bind(this);
     }
 
     componentDidMount(){
         console.log("component did load");
+        this.props.navigation.setParams({ showFilterDialog: this.showFilterDialogFunction });
         this.initNotesData();
     }
 
@@ -64,10 +75,35 @@ export class NotesListScreen extends React.Component {
                     if(keyA > keyB) return -1;
                     return 0;
                 })
+                _my.state.originalList = _my.state.notesList;
+
+                _my.state.notesList = _my.applyFilterTextOnInput(_my.state.originalList, _my.state.filterText);
 
                 _my.forceUpdate();
             });
         }); 
+    }
+
+    showFilterDialogFunction(){
+        this.state.showFilterDialog = !this.state.showFilterDialog;
+        this.forceUpdate();
+    }
+
+    applyFilterTextOnInput(inputArray, filterText){
+        console.log("filter text " + filterText);
+        console.log("input array " + inputArray.length);
+        if(filterText === "")
+            return inputArray;
+            console.log("after ");
+        var filteredArray = [];
+        for(var i = 0; i < inputArray.length; i++){
+            console.log("itr index " + i);
+            if(inputArray[i].noteText.includes(filterText)){
+                console.log("add index " + i);
+                filteredArray.push(inputArray[i]);
+            }
+        }
+        return filteredArray;
     }
 
     renderNotesItem(notesDataItem){
@@ -93,11 +129,37 @@ export class NotesListScreen extends React.Component {
     render() {
         return (
         <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
+            <Dialog.Container visible={this.state.showFilterDialog}>
+                <Dialog.Title>Search</Dialog.Title>
+                <Dialog.Description>
+                    Enter text to Search. Clear text to reset search.
+                </Dialog.Description>
+                <Dialog.Input 
+                    value={this.state.filterText}
+                    onChangeText={(text) => {
+                        this.setState({filterText:text})
+                        console.log("on pressed" + this.state.filterText);
+                    }}
+                />
+                <Dialog.Button label="Cancel" onPress={() => {
+                    this.setState({
+                        showFilterDialog:false,
+                    });
+                }}/>
+                <Dialog.Button label="Search" onPress={() => {
+                    this.state.notesList = this.applyFilterTextOnInput(this.state.originalList, this.state.filterText);
+                    this.setState({
+                        showFilterDialog:false,
+                    });
+                }}/>
+            </Dialog.Container>
+
             <FlatList
                 data={this.state.notesList}          
                 renderItem={this.renderNotesItem} 
                 keyExtractor={item => (item.id + "")}  
             />  
+
         </View>
         );
     }
