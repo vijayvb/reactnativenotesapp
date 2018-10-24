@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TextInput, Button, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, Image, TouchableOpacity, Linking } from 'react-native';
 import GridView from 'react-native-super-grid';
 import { Toast } from 'native-base'
 
@@ -35,7 +35,8 @@ export class NotesEditorScreen extends React.Component {
             text: "some text",
             noteText: "",
             attendees: "",
-            gridItems: [""]
+            gridItems: [""],
+            noteId:null
         };
         this.openImagePickerForUpload = this.openImagePickerForUpload.bind(this);
         this.renderImageGridItem = this.renderImageGridItem.bind(this);
@@ -43,10 +44,39 @@ export class NotesEditorScreen extends React.Component {
         this.saveNotesData = this.saveNotesData.bind(this);
         this.getTitleFromText = this.getTitleFromText.bind(this);
         this.getImagesFromGridItemState = this.getImagesFromGridItemState.bind(this);
+        this.populateGridItemsFromImagesArray = this.populateGridItemsFromImagesArray.bind(this);
+        this.initNoteObjToView = this.initNoteObjToView.bind(this);
+
+        this.initNoteObjToView();
     }
 
     componentDidMount() {
         this.props.navigation.setParams({ handleSave: this.saveNotesData });
+        
+    }
+
+    initNoteObjToView(){
+        var noteObj = this.props.navigation.state.params.noteObj;
+        if(noteObj){
+            this.state = {
+                noteText: noteObj.noteText,
+                attendees: noteObj.attendees,
+                gridItems: this.populateGridItemsFromImagesArray(noteObj.images),
+                noteId: noteObj.id
+            };
+        }
+
+        console.log("state onj " + JSON.stringify(this.state));
+
+    }
+
+    populateGridItemsFromImagesArray(noteObjImages){
+        var images = [];
+        images.push("");
+        for(var indx in noteObjImages){
+            images.push(noteObjImages[indx]);
+        }
+        return images;    
     }
 
     renderImageGridItem(imageItem){
@@ -58,7 +88,7 @@ export class NotesEditorScreen extends React.Component {
                 if(itemCopy=="")
                     this.openImagePickerForUpload();
                 else{
-                    ///open image
+                    Linking.openURL(itemCopy);
                 }    
               }
             }>
@@ -103,6 +133,8 @@ export class NotesEditorScreen extends React.Component {
     saveNotesData(){
         
         var _newNote = new NoteModel();
+        if(this.state.noteId)
+            _newNote.id = this.state.noteId;
         _newNote.title = this.getTitleFromText();
         _newNote.noteText = this.state.noteText;
         _newNote.attendees = this.state.attendees;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList, Text, Button } from 'react-native';
+import { StyleSheet, View, FlatList, Text, Button, TouchableOpacity } from 'react-native';
 import Moment from 'moment';
 import { NoteModel, getNotesRefForUser } from '../../data/model/NoteModel';
 
@@ -35,6 +35,7 @@ export class NotesListScreen extends React.Component {
         };
         this.notesRef;
         this.initNotesData = this.initNotesData.bind(this);
+        this.renderNotesItem = this.renderNotesItem.bind(this);
     }
 
     componentDidMount(){
@@ -44,15 +45,26 @@ export class NotesListScreen extends React.Component {
 
     initNotesData(){
         var _my = this;
-            
+           
         getNotesRefForUser(function(ref) {
             this.notesRef = ref;
-            this.notesRef.once('value').then(function(snapshot) {
+            this.notesRef.on('value', function(snapshot) {
                 _my.state.notesList = [];
                 for (var key in snapshot.val()) {
                     console.log("key is " + JSON.stringify(snapshot.val()[key]));
                     _my.state.notesList.push(snapshot.val()[key]);
                 }
+                
+                //in memory sort
+                _my.state.notesList.sort(function(a, b){
+                    var keyA = new Date(a.datetime),
+                    keyB = new Date(b.datetime);
+                    // Compare the 2 dates
+                    if(keyA < keyB) return 1;
+                    if(keyA > keyB) return -1;
+                    return 0;
+                })
+
                 _my.forceUpdate();
             });
         }); 
@@ -61,15 +73,20 @@ export class NotesListScreen extends React.Component {
     renderNotesItem(notesDataItem){
         console.log("notesDataItem " + JSON.stringify(notesDataItem));
         return(
-            <View style={styles.listItemContainer}>
-                <Text numberOfLines={1} style={styles.textTitle}>{notesDataItem.item.title}</Text>
-                <Text numberOfLines={2} style={styles.textNotes}>{notesDataItem.item.noteText}</Text>
-                <View style={{flex:1, flexDirection:'row', justifyContent: 'space-between', alignSelf: 'stretch'}}>
-                    <Text numberOfLines={1} style={styles.textDateTime}>Images: {notesDataItem.item.images?notesDataItem.item.images.length:0}</Text>
-                    <Text numberOfLines={1} style={styles.textDateTime}>{Moment(notesDataItem.item.datetime).format('YYYY-MM-DD HH:mm')}</Text>
+            <TouchableOpacity onPress={() => {
+                    this.props.navigation.navigate('NotesEditor', {noteObj:notesDataItem.item});
+                }
+            }>
+                <View style={styles.listItemContainer}>
+                    <Text numberOfLines={1} style={styles.textTitle}>{notesDataItem.item.title}</Text>
+                    <Text numberOfLines={2} style={styles.textNotes}>{notesDataItem.item.noteText}</Text>
+                    <View style={{flex:1, flexDirection:'row', justifyContent: 'space-between', alignSelf: 'stretch'}}>
+                        <Text numberOfLines={1} style={styles.textDateTime}>Images: {notesDataItem.item.images?notesDataItem.item.images.length:0}</Text>
+                        <Text numberOfLines={1} style={styles.textDateTime}>{Moment(notesDataItem.item.datetime).format('YYYY-MM-DD HH:mm')}</Text>
+                    </View>
+                    
                 </View>
-                
-            </View>
+            </TouchableOpacity>
         );
     }
 
