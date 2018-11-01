@@ -56,14 +56,15 @@ export class NotesEditorScreen extends React.Component {
     }
 
     initNoteObjToView(){
-        var noteObj = this.props.navigation.state.params.noteObj;
-        if(noteObj){
-            this.state = {
-                noteText: noteObj.noteText,
-                attendees: noteObj.attendees,
-                gridItems: this.populateGridItemsFromImagesArray(noteObj.images),
-                noteId: noteObj.id
-            };
+        if(this.props.navigation.state.params){
+            var noteObj = this.props.navigation.state.params.noteObj;
+            if(noteObj)
+                this.state = {
+                    noteText: noteObj.noteText,
+                    attendees: noteObj.attendees,
+                    gridItems: this.populateGridItemsFromImagesArray(noteObj.images),
+                    noteId: noteObj.id
+                };
         }
 
         console.log("state onj " + JSON.stringify(this.state));

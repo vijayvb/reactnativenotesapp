@@ -39,21 +39,24 @@ export class SignInScreen extends React.Component {
             <TouchableOpacity 
                 style={styles.itemContainer}
                 onPress={() => {
-                    this.doSignIn();
-                }
-            }>
-                <Text style={styles.textTitle}>Signin</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style={styles.itemContainer}
-                onPress={() => {
                     if(this.state.isSignIn)
                         this.doSignIn();
                     else
                         this.doSignUp();    
                 }
             }>
-                <Text style={styles.textTitle}>{this.state.isSignIn?"Signin":"Signup"}</Text>
+                <Text style={styles.textTitle}>{this.state.isSignIn?"SignIn":"Signup"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                style={styles.textTitleWithMargin}
+                onPress={() => {
+                    if(this.state.isSignIn)
+                        this.setState({"isSignIn":false});
+                    else
+                        this.setState({"isSignIn":true});
+                }
+            }>
+                <Text style={styles.textTitle}>{this.state.isSignIn?"New user? Click here to Signup.":"Click here to Signin!"}</Text>
             </TouchableOpacity>
         </View>
         );
@@ -112,9 +115,7 @@ export class SignInScreen extends React.Component {
         }
         else{
             firebase.auth().signInWithEmailAndPassword(email, password).then(function(user) {
-                console.log("User id " + user.id);
-                console.log("User id " + user.email);
-
+                
                 Toast.show({
                     text: "Signin Successful..",
                     position: 'bottom',
